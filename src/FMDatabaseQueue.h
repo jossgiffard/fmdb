@@ -20,7 +20,9 @@
 @property (atomic, retain) NSString *path;
 
 + (id)databaseQueueWithPath:(NSString*)aPath;
++ (id)databaseQueueWithPath:(NSString*)aPath attachedToDBAtPath:(NSString*)bPath as:(NSString *)alias;
 - (id)initWithPath:(NSString*)aPath;
+- (id)initWithPath:(NSString *)aPath attachedToDBAtPath:(NSString *)bPath as:(NSString *)alias;
 - (void)close;
 
 - (void)inDatabase:(void (^)(FMDatabase *db))block;

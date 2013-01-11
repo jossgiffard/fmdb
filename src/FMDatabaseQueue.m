@@ -30,6 +30,15 @@
     return q;
 }
 
++ (id)databaseQueueWithPath:(NSString *)aPath attachedToDBAtPath:(NSString *)bPath as:(NSString *)alias {
+    
+    FMDatabaseQueue *q = [[self alloc] initWithPath:aPath attachedToDBAtPath:bPath as:alias];
+    
+    FMDBAutorelease(q);
+    
+    return(q);
+}
+
 - (id)initWithPath:(NSString*)aPath {
     
     self = [super init];
@@ -51,6 +60,18 @@
     }
     
     return self;
+}
+
+- (id)initWithPath:(NSString *)aPath attachedToDBAtPath:(NSString *)bPath as:(NSString *)alias {
+    self = [self initWithPath:aPath];
+    
+    if(self) {
+        [self inDatabase:^(FMDatabase *db) {
+            [db executeUpdate:[NSString stringWithFormat:@"ATTACH DATABASE '%@' AS %@", bPath, alias]];
+        }];
+    }
+    
+    return(self);
 }
 
 - (void)dealloc {
