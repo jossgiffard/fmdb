@@ -220,7 +220,19 @@ if ([s next]) {
 }];
 </code></pre>
 
-<p>An easy way to wrap things up in a transaction can be done like this:</p>
+<p>FMDatabaseQueue also supports attaching the named database to another named database during the init phase of the queue.  This simply opens the named database at the specified path then runs the SQL command 'ATTACH 'database_to_attach' AS alias' against the main database. For example if I have a database 'master.db' that I need to alias against 'user.db' as 'userDB' you simply create the queue in the following manner:</p>
+
+<pre><code>NSString *aPath = @"main.db';
+NSString *bPath = @"user.db";
+NSString *alias = @"userDB";
+
+...
+
+DatabaseQueue *queue = [FMDatabaseQueue databaseQueueWithPath:aPath attachedToDBAtPath:bPath as:alias];
+</code></pre>
+
+<p>Then access the queue in the same manner as the singular database queue. 
+An easy way to wrap things up in a transaction can be done like this:</p>
 
 <pre><code>[queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [db executeUpdate:@"INSERT INTO myTable VALUES (?)", [NSNumber numberWithInt:1]];
