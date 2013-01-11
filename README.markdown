@@ -158,8 +158,18 @@ Then use it like so:
             …
         }
     }];
+    
+FMDatabaseQueue also supports attaching the named database to another named database during the init phase of the queue.  This simply opens the named database at the specified path then runs the SQL command 'ATTACH 'database_to_attach' AS alias' against the main database. For example if I have a database 'master.db' that I need to alias against 'user.db' as 'userDB' you simply create the queue in the following manner:
 
-An easy way to wrap things up in a transaction can be done like this:
+	NSString *aPath = @"main.db';
+	NSString *bPath = @"user.db";
+	NSString *alias = @"userDB";
+	
+	...
+	
+	DatabaseQueue *queue = [FMDatabaseQueue databaseQueueWithPath:aPath attachedToDBAtPath:bPath as:alias];
+
+Then access the queue in the same manner as the singular database queue. An easy way to wrap things up in a transaction can be done like this:
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         [db executeUpdate:@"INSERT INTO myTable VALUES (?)", [NSNumber numberWithInt:1]];
@@ -173,8 +183,7 @@ An easy way to wrap things up in a transaction can be done like this:
 		// etc…
 		[db executeUpdate:@"INSERT INTO myTable VALUES (?)", [NSNumber numberWithInt:4]];
     }];
-
-
+	
 FMDatabaseQueue will make a serialized GCD queue in the background and execute the blocks you pass to the GCD queue.  This means if you call your FMDatabaseQueue's methods from multiple threads at the same time GDC will execute them in the order they are received.  This means queries and updates won't step on each other's toes, and every one is happy.
 
 ## Making custom sqlite functions, based on blocks.
