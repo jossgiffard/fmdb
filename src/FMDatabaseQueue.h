@@ -13,11 +13,14 @@
 
 @interface FMDatabaseQueue : NSObject {
     NSString            *_path;
+    NSString            *_attachedDBAlias;
     dispatch_queue_t    _queue;
     FMDatabase          *_db;
 }
 
 @property (atomic, retain) NSString *path;
+@property (atomic, retain) NSString *attachedDBAlias;
+
 
 + (id)databaseQueueWithPath:(NSString*)aPath;
 + (id)databaseQueueWithPath:(NSString*)aPath attachedToDBAtPath:(NSString*)bPath as:(NSString *)alias;

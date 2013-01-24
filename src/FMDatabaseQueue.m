@@ -17,12 +17,6 @@
  
  */
 
-@interface FMDatabaseQueue()
-
-@property (retain, nonatomic) NSString *attachedDBAlias;
-
-@end
-
 @implementation FMDatabaseQueue
 
 
