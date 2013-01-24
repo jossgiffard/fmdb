@@ -16,10 +16,18 @@
  something in dispatch_sync
  
  */
- 
+
+@interface FMDatabaseQueue()
+
+@property (retain, nonatomic) NSString *attachedDBAlias;
+
+@end
+
 @implementation FMDatabaseQueue
 
+
 @synthesize path = _path;
+@synthesize attachedDBAlias = _attachedDBAlias;
 
 + (id)databaseQueueWithPath:(NSString*)aPath {
     
@@ -66,6 +74,7 @@
     self = [self initWithPath:aPath];
     
     if(self) {
+        self.attachedDBAlias = alias;
         [self inDatabase:^(FMDatabase *db) {
             [db executeUpdate:[NSString stringWithFormat:@"ATTACH DATABASE '%@' AS %@", bPath, alias]];
         }];
@@ -78,7 +87,7 @@
     
     FMDBRelease(_db);
     FMDBRelease(_path);
-    
+    FMDBRelease(_attachedDBAlias);
     if (_queue) {
         FMDBDispatchQueueRelease(_queue);
         _queue = 0x00;
@@ -90,7 +99,10 @@
 
 - (void)close {
     FMDBRetain(self);
-    dispatch_sync(_queue, ^() { 
+    dispatch_sync(_queue, ^() {
+        if([self.attachedDBAlias length]) {
+            [_db executeQuery:[NSString stringWithFormat:@"DETACH DATABASE %@", self.attachedDBAlias]];
+        }
         [_db close];
         FMDBRelease(_db);
         _db = 0x00;
