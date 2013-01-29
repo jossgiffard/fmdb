@@ -184,7 +184,10 @@ Then access the queue in the same manner as the singular database queue. An easy
 		[db executeUpdate:@"INSERT INTO myTable VALUES (?)", [NSNumber numberWithInt:4]];
     }];
 	
-FMDatabaseQueue will make a serialized GCD queue in the background and execute the blocks you pass to the GCD queue.  This means if you call your FMDatabaseQueue's methods from multiple threads at the same time GDC will execute them in the order they are received.  This means queries and updates won't step on each other's toes, and every one is happy.
+
+FMDatabaseQueue will run the blocks on a serialized queue (hence the name of the class).  So if you call FMDatabaseQueue's methods from multiple threads at the same time, they will be executed in the order they are received.  This way queries and updates won't step on each other's toes, and every one is happy.
+
+**Note:** The calls to FMDatabaseQueue's methods are blocking.  So even though you are passing along blocks, they will **not** be run on another thread.
 
 ## Making custom sqlite functions, based on blocks.
 
